@@ -1,0 +1,21 @@
+[caller_settings]
+config_name = "dna_r9.4.1_450bps_hac"
+host = "127.0.0.1"
+port = 5555
+
+[conditions]
+reference = "/path/to/reference.mmi"
+
+[conditions.0]
+name = "select_npgraph"
+control = false
+min_chunks = 0
+max_chunks = inf
+#all contigs of interested assembly
+targets = ["ctg1", "ctg2", ..]
+single_on = "proceed"
+multi_on = "proceed"
+single_off = "unblock"
+multi_off = "unblock"
+no_seq = "proceed"
+no_map = "proceed"
