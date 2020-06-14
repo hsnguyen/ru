@@ -26,6 +26,7 @@ setup(
         "console_scripts": [
             "ru_validate={}.validate:main".format(PKG_NAME),
             "ru_generators={}.ru_gen:main".format(PKG_NAME),
+            "ru_assembly={}.ru_npgraph:main".format(PKG_NAME),
             "ru_summarise_fq={}.summarise_fq:main".format(PKG_NAME),
             "ru_iteralign={}.iteralign:main".format(PKG_NAME),
             "ru_iteralign_centrifuge={}.iteralign_centrifuge:main".format(PKG_NAME),
