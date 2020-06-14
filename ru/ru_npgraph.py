@@ -354,10 +354,10 @@ def simple_analysis(
             # limit the rate at which we make requests
             if t0 + throttle > t1:
                 time.sleep(throttle + t0 - t1)
-        else:
-            send_message(client.connection, "Read Until Client Stopped.", Severity.WARN)
-            caller.disconnect()
-            logger.info("Finished analysis of reads as client stopped.")
+    else:
+        send_message(client.connection, "Read Until Client Stopped.", Severity.WARN)
+        caller.disconnect()
+        logger.info("Finished analysis of reads as client stopped.")
 
 
 def run_workflow(client, analysis_worker, n_workers, run_time, runner_kwargs=None):
