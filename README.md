@@ -48,7 +48,7 @@ pip install --upgrade pip
 
 # Install our Read Until API
 pip install git+https://github.com/LooseLab/read_until_api_v2@master
-pip install git+https://github.com/LooseLab/ru@master
+pip install git+https://github.com/hsnguyen/ru@master
 ```
 
 Usage
