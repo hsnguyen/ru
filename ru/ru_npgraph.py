@@ -279,12 +279,14 @@ def simple_analysis(
                 request = RequestAssembly()
                 request.read_id = read_id
 
+                hits = set()
                 for hit in results:
                     pf.debug("{}\t{}\t{}".format(read_id, seq_len, hit))
                     #print("{}\t{}\t{}\t{}".format(hit.ctg, hit.r_st, hit.r_en, hit.cigar_str))
                     request.hits_list.append(AlignmentMsg(query_name=name,query_length=len(seq),query_start=hit.q_st,query_end=hit.q_en,strand=hit.strand>0,target_name=hit.ctg,target_length=hit.ctg_len,target_start=hit.r_st,target_end=hit.r_en,quality=hit.mapq,score=hit.mlen))
+                    hits.add(hit.ctg)
 
-                if request.hits_list & conditions[run_info[channel]].targets:
+                if hits & conditions[run_info[channel]].targets:
                     # Mappings and targets overlap
                     coord_match = any(
                         between(r.r_st, c)
@@ -299,14 +301,14 @@ def simple_analysis(
                         log.error("{}: errorcode={}".format(request.read_id, str(e.code())))
 
                     if len(request.hits_list) == 1:
-                        if coord_match & response:
+                        if coord_match and response:
                             # Single match that is within coordinate range
                             mode = "single_on"
                         else:
                             # Single match to a target outside coordinate range
                             mode = "single_off"
                     elif len(request.hits_list) > 1:
-                        if coord_match & response:
+                        if coord_match and response:
                             # Multiple matches with at least one in the correct region
                             mode = "multi_on"
                         else:
