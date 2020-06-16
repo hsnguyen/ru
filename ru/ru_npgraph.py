@@ -31,8 +31,8 @@ from ru.utils import print_args, get_run_info, between, setup_logger, describe_e
 from ru.utils import send_message, Severity
 
 import grpc
-import npgraph_service_pb2
-import npgraph_service_pb2_grpc
+from ru.npgraph_service_pb2 import RequestAssembly, AlignmentMsg
+from ru.npgraph_service_pb2_grpc import AssemblyGuideStub
 
 class ThreadPoolExecutorStackTraced(concurrent.futures.ThreadPoolExecutor):
     """ThreadPoolExecutor records only the text of an exception,
@@ -213,7 +213,7 @@ def simple_analysis(
         t0 = timer()
         r = 0
         with grpc.insecure_channel('localhost:2105') as channel:
-            stub = npgraph_service_pb2_grpc.AssemblyGuideStub(channel)
+            stub = AssemblyGuideStub(channel)
             logger.info("Connected with server at localhost:2105")
 
             for read_info, read_id, seq_len, results in mapper.map_reads_2(
@@ -276,13 +276,13 @@ def simple_analysis(
                     mode = "no_map"
 
                 #1. make request
-                request = npgraph_service_pb2.RequestAssembly()
+                request = RequestAssembly()
                 request.read_id = read_id
 
                 for hit in results:
                     pf.debug("{}\t{}\t{}".format(read_id, seq_len, hit))
                     #print("{}\t{}\t{}\t{}".format(hit.ctg, hit.r_st, hit.r_en, hit.cigar_str))
-                    request.hits_list.append(npgraph_service_pb2.AlignmentMsg(query_name=name,query_length=len(seq),query_start=hit.q_st,query_end=hit.q_en,strand=hit.strand>0,target_name=hit.ctg,target_length=hit.ctg_len,target_start=hit.r_st,target_end=hit.r_en,quality=hit.mapq,score=hit.mlen))
+                    request.hits_list.append(AlignmentMsg(query_name=name,query_length=len(seq),query_start=hit.q_st,query_end=hit.q_en,strand=hit.strand>0,target_name=hit.ctg,target_length=hit.ctg_len,target_start=hit.r_st,target_end=hit.r_en,quality=hit.mapq,score=hit.mlen))
 
                 if request.hits_list & conditions[run_info[channel]].targets:
                     # Mappings and targets overlap
