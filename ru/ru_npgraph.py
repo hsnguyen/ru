@@ -30,6 +30,9 @@ from ru.basecall import GuppyCaller as Caller
 from ru.utils import print_args, get_run_info, between, setup_logger, describe_experiment
 from ru.utils import send_message, Severity
 
+import grpc
+import npgraph_service_pb2
+import npgraph_service_pb2_grpc
 
 class ThreadPoolExecutorStackTraced(concurrent.futures.ThreadPoolExecutor):
     """ThreadPoolExecutor records only the text of an exception,
