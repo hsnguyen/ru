@@ -214,7 +214,7 @@ def simple_analysis(
         r = 0
         with grpc.insecure_channel('localhost:2105') as channel:
             stub = AssemblyGuideStub(channel)
-            logger.info("Connected with server at localhost:2105")
+            #logger.info("Connected with server at localhost:2105")
 
             for read_info, read_id, seq_len, results in mapper.map_reads_2(
                     caller.basecall_minknow(
