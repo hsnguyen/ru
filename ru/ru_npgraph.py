@@ -283,7 +283,7 @@ def simple_analysis(
                 for hit in results:
                     pf.debug("{}\t{}\t{}".format(read_id, seq_len, hit))
                     #print("{}\t{}\t{}\t{}".format(hit.ctg, hit.r_st, hit.r_en, hit.cigar_str))
-                    request.hits_list.append(AlignmentMsg(query_name=name,query_length=len(seq),query_start=hit.q_st,query_end=hit.q_en,strand=hit.strand>0,target_name=hit.ctg,target_length=hit.ctg_len,target_start=hit.r_st,target_end=hit.r_en,quality=hit.mapq,score=hit.mlen))
+                    request.hits_list.append(AlignmentMsg(query_name=read_id,query_length=seq_len,query_start=hit.q_st,query_end=hit.q_en,strand=hit.strand>0,target_name=hit.ctg,target_length=hit.ctg_len,target_start=hit.r_st,target_end=hit.r_en,quality=hit.mapq,score=hit.mlen))
                     hits.add(hit.ctg)
 
                 if hits & conditions[run_info[channel]].targets:
