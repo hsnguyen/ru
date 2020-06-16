@@ -179,42 +179,42 @@ def simple_analysis(
     cl.debug("\t".join(l_string))
     l_string = "\t".join(("{}" for _ in l_string))
     loop_counter = 0
-    while client.is_running:
-        if live_toml_path.is_file():
-            # Reload the TOML config from the *_live file
-            run_info, conditions, new_reference, _ = get_run_info(live_toml_path, flowcell_size)
+    with grpc.insecure_channel('localhost:2105') as channel:
+        stub = AssemblyGuideStub(channel)
+        logger.info("Connected with server at localhost:2105")
+        while client.is_running:
+            if live_toml_path.is_file():
+                # Reload the TOML config from the *_live file
+                run_info, conditions, new_reference, _ = get_run_info(live_toml_path, flowcell_size)
 
-            # Check the reference path if different from the loaded mapper
-            if new_reference != mapper.index:
-                old_reference = mapper.index
-                # Log to file and MinKNOW interface
-                logger.info("Reloading mapper")
-                send_message(client.connection, "Reloading mapper. Read Until paused.", Severity.INFO)
+                # Check the reference path if different from the loaded mapper
+                if new_reference != mapper.index:
+                    old_reference = mapper.index
+                    # Log to file and MinKNOW interface
+                    logger.info("Reloading mapper")
+                    send_message(client.connection, "Reloading mapper. Read Until paused.", Severity.INFO)
 
-                # Update mapper client.
-                mapper = CustomMapper(new_reference)
-                # Log on success
-                logger.info("Reloaded mapper")
+                    # Update mapper client.
+                    mapper = CustomMapper(new_reference)
+                    # Log on success
+                    logger.info("Reloaded mapper")
 
-                # If we've reloaded a reference, delete the previous one
-                if old_reference:
-                    logger.info("Deleting old mmi {}".format(old_reference))
-                    # We now delete the old mmi file.
-                    Path(old_reference).unlink()
-                    logger.info("Old mmi deleted.")
+                    # If we've reloaded a reference, delete the previous one
+                    if old_reference:
+                        logger.info("Deleting old mmi {}".format(old_reference))
+                        # We now delete the old mmi file.
+                        Path(old_reference).unlink()
+                        logger.info("Old mmi deleted.")
 
-        # TODO: Fix the logging to just one of the two in use
+            # TODO: Fix the logging to just one of the two in use
 
-        if not mapper.initialised:
-            time.sleep(throttle)
-            continue
+            if not mapper.initialised:
+                time.sleep(throttle)
+                continue
 
-        loop_counter += 1
-        t0 = timer()
-        r = 0
-        with grpc.insecure_channel('localhost:2105') as channel:
-            stub = AssemblyGuideStub(channel)
-            #logger.info("Connected with server at localhost:2105")
+            loop_counter += 1
+            t0 = timer()
+            r = 0
 
             for read_info, read_id, seq_len, results in mapper.map_reads_2(
                     caller.basecall_minknow(
@@ -359,10 +359,10 @@ def simple_analysis(
             # limit the rate at which we make requests
             if t0 + throttle > t1:
                 time.sleep(throttle + t0 - t1)
-    else:
-        send_message(client.connection, "Read Until Client Stopped.", Severity.WARN)
-        caller.disconnect()
-        logger.info("Finished analysis of reads as client stopped.")
+        else:
+            send_message(client.connection, "Read Until Client Stopped.", Severity.WARN)
+            caller.disconnect()
+            logger.info("Finished analysis of reads as client stopped.")
 
 
 def run_workflow(client, analysis_worker, n_workers, run_time, runner_kwargs=None):
