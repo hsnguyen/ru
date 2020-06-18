@@ -300,14 +300,14 @@ def simple_analysis(
                     except grpc.RpcError as e:
                         log.error("{}: errorcode={}".format(request.read_id, str(e.code())))
 
-                    if len(request.hits_list) == 1:
+                    if len(hits) == 1:
                         if coord_match and response:
                             # Single match that is within coordinate range
                             mode = "single_on"
                         else:
                             # Single match to a target outside coordinate range
                             mode = "single_off"
-                    elif len(request.hits_list) > 1:
+                    elif len(hits) > 1:
                         if coord_match and response:
                             # Multiple matches with at least one in the correct region
                             mode = "multi_on"
@@ -317,10 +317,10 @@ def simple_analysis(
 
                 else:
                     # No matches in mappings
-                    if len(request.hits_list) > 1:
+                    if len(hits) > 1:
                         # More than one, off-target, mapping
                         mode = "multi_off"
-                    elif len(request.hits_list) == 1:
+                    elif len(hits) == 1:
                         # Single off-target mapping
                         mode = "single_off"
 
