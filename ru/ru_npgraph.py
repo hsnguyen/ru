@@ -297,18 +297,19 @@ def simple_analysis(
                     )
                     try:
                         response = stub.GetAssemblyContribution(request)
+                        pf.debug("npGraph:\t{}\t{}".format(response.read_id, response.usefulness))
                     except grpc.RpcError as e:
                         log.error("{}: errorcode={}".format(request.read_id, str(e.code())))
 
                     if len(hits) == 1:
-                        if coord_match and response:
+                        if coord_match and response.usefulness:
                             # Single match that is within coordinate range
                             mode = "single_on"
                         else:
                             # Single match to a target outside coordinate range
                             mode = "single_off"
                     elif len(hits) > 1:
-                        if coord_match and response:
+                        if coord_match and response.usefulness:
                             # Multiple matches with at least one in the correct region
                             mode = "multi_on"
                         else:
